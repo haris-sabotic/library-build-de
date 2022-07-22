@@ -41,7 +41,7 @@ class UserService {
         //request all data, validate and update librarian
         request()->validate([
             'librarianNameEdit'       => 'nullable|string|max:128|regex:/^([^0-9]*)$/',
-            'librarianJmbgEdit'       => 'nullable|digits:14|unique:users,jmbg',
+            'librarianJmbgEdit'       => 'nullable|digits:13|unique:users,jmbg',
             'librarianEmailEdit'      => 'nullable|string|unique:users,email|max:128',
             'librarianUsernameEdit'   => 'nullable|string|max:64',
             'librarianPasswordEdit'   => 'nullable|max:256|min:8|same:librarianPassword2Edit',
@@ -81,7 +81,7 @@ class UserService {
         //request all data, validate and add librarian
         request()->validate([
             'librarianName'       => 'required|max:128|regex:/^([^0-9]*)$/',
-            'librarianJmbg'       => 'required|digits:14|unique:users,jmbg',
+            'librarianJmbg'       => 'required|digits:13|unique:users,jmbg',
             'librarianEmail'      => 'required|string|unique:users,email|max:128',
             'librarianUsername'   => 'required|string|max:64',
             'librarianPassword'   => 'required|max:256|min:8|same:librarianPassword2',
@@ -190,7 +190,7 @@ class UserService {
         //request all data, validate and update student
         request()->validate([
             'studentNameEdit'      => 'nullable|string|max:128|regex:/^([^0-9]*)$/',
-            'studentJmbgEdit'      => 'nullable|digits:14|unique:users,jmbg',
+            'studentJmbgEdit'      => 'nullable|digits:13|unique:users,jmbg',
             'studentEmailEdit'     => 'nullable|string|unique:users,email|max:128',
             'studentUsernameEdit'  => 'nullable|string|max:64',
             'studentPasswordEdit'  => 'nullable|max:256|min:8|same:studentPassword2Edit',
@@ -230,7 +230,7 @@ class UserService {
         //request all data, validate and update student
         request()->validate([
             'studentName'       => 'required|string|max:128|regex:/^([^0-9]*)$/',
-            'studentJmbg'       => 'required|digits:14|unique:users,jmbg',
+            'studentJmbg'       => 'required|digits:13|unique:users,jmbg',
             'studentEmail'      => 'required|string|unique:users,email|max:128',
             'studentUsername'   => 'required|string|max:64',
             'studentPassword'   => 'required|max:256|min:8|same:studentPassword2',
