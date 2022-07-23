@@ -29,7 +29,7 @@ use App\Models\Reservation;
 |
 */
 
-Route::get('/login', function (Request $request) {
+Route::post('/login', function (Request $request) {
     $username = $request->get('username');
     $password = $request->get('password');
 
@@ -48,7 +48,7 @@ Route::get('/login', function (Request $request) {
         'msg' => 'success',
         'plainTextToken' => $token->plainTextToken,
     ];
-}); // {"msg":"success","plainTextToken":"18|caqhPOW8Wp1tHjYwipVfVhZF7NfRUR5s4xnEOlwB"}
+});
 
 Route::get('/user', function (Request $request) {
     $user = $request->user();
@@ -61,7 +61,7 @@ Route::get('/user', function (Request $request) {
     ];
 })->middleware(['auth:sanctum']);
 
-Route::get('/edit-user', function (Request $request) {
+Route::post('/edit-user', function (Request $request) {
     $user = $request->user();
     $name = $request->get('name');
     $email = $request->get('email');
