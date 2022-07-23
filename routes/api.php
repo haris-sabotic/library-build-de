@@ -148,8 +148,28 @@ Route::get('/books', function () {
     return $books;
 });
 
+// for authors, genres and categories do the following in the query string:
+//   genres[]=1&genres[]=2&authors[]=4&authors[]=7&categories[]=1
 Route::get('/search-books', function (Request $request) {
-    return Book::query()->where('title', 'LIKE', '%'.$request->get('query').'%')->get();
+    $data = Book::query()->where('title', 'LIKE', '%'.$request->get('query').'%');
+
+    if ($request->get('script')) {
+        $data = $data->where('script_id', $request->get('script'));
+    }
+    if ($request->get('language')) {
+        $data = $data->where('language_id', $request->get('language'));
+    }
+    if ($request->get('binding')) {
+        $data = $data->where('binding_id', $request->get('binding'));
+    }
+    if ($request->get('format')) {
+        $data = $data->where('format_id', $request->get('format'));
+    }
+    if ($request->get('publisher')) {
+        $data = $data->where('publisher_id', $request->get('publisher'));
+    }
+
+    return $data->get();
 });
 
 Route::get('/kategorije', function () {
