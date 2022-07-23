@@ -32,6 +32,8 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
+        
+        /*
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -42,12 +44,40 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'userType_id' => 2,
+            'username' => $request->name,
+            'jmbg' => '1234567891234'
         ]);
+
+
+        $user->userType_id = 2;
+        $librarian->username = $request->name;
+        $librarian->jmbg = 1234567891234;
 
         event(new Registered($user));
 
         Auth::login($user);
 
         return redirect(RouteServiceProvider::HOME);
+        */
+
+
+        $librarian = new User();
+
+        $librarian->userType_id = 1;
+
+        $librarian->name              = 'admin';
+        $librarian->jmbg              = '1234567890123';
+        $librarian->email_verified_at = now();
+        $librarian->email             = 'admin@gmail.com';
+        $librarian->username          = 'admin';
+        $librarian->remember_token    = 'jlskasjjks';
+
+        $password = 'password';
+        $passwordRepeat = 'password';
+
+        $librarian->password=Hash::make($password);
+
+        $librarian->save();
     }
 }
