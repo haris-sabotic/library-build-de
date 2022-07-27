@@ -84,6 +84,98 @@ Route::post('/edit-user', function (Request $request) {
     return [ 'msg' => 'success' ];
 })->middleware(['auth:sanctum']);
 
+Route::get('/zahtjevi', function (Request $request) {
+    $user = $request->user();
+
+    $filter = $request->get('filter');
+
+    if ($filter == null) {
+        $data = [];
+
+        $reservations =  DB::table('reservations')
+            ->where('student_id', $user->id)
+            ->get();
+
+        foreach($reservations as $reservation) {
+            array_push($data, [
+                "book_id" => $reservation->book_id, 
+                "type" => 'rezervacija', 
+            ]);
+        }
+
+
+        $rents =  DB::table('rents')
+            ->where('student_id', $user->id)
+            ->get();
+
+        foreach($rents as $rent) {
+ 
+            if ($rent->return_date == null) {
+                array_push($data, [
+                    "book_id" => $rent->book_id, 
+                    "type" => 'zaduzivanje', 
+                ]);
+            } else {
+                array_push($data, [
+                    "book_id" => $rent->book_id, 
+                    "type" => 'vracena', 
+                ]);
+            }
+        }
+
+        return $data;
+    } else if ($filter == 'rezervacije') {
+        $data = [];
+
+        $reservations =  DB::table('reservations')
+            ->where('student_id', $user->id)
+            ->get();
+
+        foreach($reservations as $reservation) {
+            array_push($data, [
+                "book_id" => $reservation->book_id, 
+                "type" => 'rezervacija', 
+            ]);
+        }
+
+        return $data;
+    } else if ($filter == 'zaduzene') {
+        $data = [];
+
+        $rents =  DB::table('rents')
+            ->where('student_id', $user->id)
+            ->get();
+
+        foreach($rents as $rent) {
+            if ($rent->return_date == null) {
+                array_push($data, [
+                    "book_id" => $rent->book_id, 
+                    "type" => 'zaduzivanje', 
+                ]);
+            }
+        }
+
+        return $data;
+    } else if ($filter == 'vracene') {
+        $data = [];
+
+        $rents =  DB::table('rents')
+            ->where('student_id', $user->id)
+            ->get();
+
+        foreach($rents as $rent) {
+            if ($rent->return_date != null) {
+                array_push($data, [
+                    "book_id" => $rent->book_id, 
+                    "type" => 'vracena', 
+                ]);
+            }
+        }
+
+        return $data;
+    }
+})->middleware(['auth:sanctum']);
+
 Route::post('/rezervisi', function (Request $request) {
     $user = $request->user();
     $bookId = $request->get('id');

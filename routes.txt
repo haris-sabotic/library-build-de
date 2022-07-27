@@ -5,7 +5,7 @@ URL						TYPE	AUTH	PARAMETERS								RESULT
 /forgot-password		POST	none	username								success/invalid username
 */user					GET		token	none									jmbg, name, email, username, photo
 */edit-user				POST	token	name/email/username/old pass/new pass	success/invalid old pass
-/zahtjevi				GET		token	zaduzene?/vracene?/rezervacije?			lista knjiga
+*/zahtjevi				GET		token	zaduzene?/vracene?/rezervacije?			lista knjiga
 /izbrisi-transakciju	POST	token	id										success/failure(invalid id/knjiga nije vracena)
 */rezervisi				POST	token	id, datum od, datum do					none
 */aktivnosti			GET		token	none									lista aktivnosti vezanih za korisnika
