@@ -98,6 +98,7 @@ Route::get('/zahtjevi', function (Request $request) {
 
         foreach($reservations as $reservation) {
             array_push($data, [
+                "id" => $reservation->id,
                 "book_id" => $reservation->book_id, 
                 "type" => 'rezervacija', 
             ]);
@@ -109,14 +110,15 @@ Route::get('/zahtjevi', function (Request $request) {
             ->get();
 
         foreach($rents as $rent) {
- 
             if ($rent->return_date == null) {
                 array_push($data, [
+                    "id" => $rent->id,
                     "book_id" => $rent->book_id, 
                     "type" => 'zaduzivanje', 
                 ]);
             } else {
                 array_push($data, [
+                    "id" => $rent->id,
                     "book_id" => $rent->book_id, 
                     "type" => 'vracena', 
                 ]);
@@ -133,6 +135,7 @@ Route::get('/zahtjevi', function (Request $request) {
 
         foreach($reservations as $reservation) {
             array_push($data, [
+                "id" => $reservation->id,
                 "book_id" => $reservation->book_id, 
                 "type" => 'rezervacija', 
             ]);
@@ -149,6 +152,7 @@ Route::get('/zahtjevi', function (Request $request) {
         foreach($rents as $rent) {
             if ($rent->return_date == null) {
                 array_push($data, [
+                    "id" => $rent->id,
                     "book_id" => $rent->book_id, 
                     "type" => 'zaduzivanje', 
                 ]);
@@ -166,6 +170,7 @@ Route::get('/zahtjevi', function (Request $request) {
         foreach($rents as $rent) {
             if ($rent->return_date != null) {
                 array_push($data, [
+                    "id" => $rent->id,
                     "book_id" => $rent->book_id, 
                     "type" => 'vracena', 
                 ]);
