@@ -11,7 +11,7 @@ URL						TYPE	AUTH	PARAMETERS								RESULT
 */aktivnosti			GET		token	none									lista aktivnosti vezanih za korisnika
 */book					GET		none	id										naslov, authori, opis, na raspolaganju/izdato, br. komada, kategorije, zanrovi, izdavac, god. izdavanja
 */books					GET		none	none									lista knjiga
-+/search-books			GET		none	query, filters							lista knjiga
+*/search-books			GET		none	query, filters							lista knjiga
 */kategorije			GET		none	none									lista kategorija
 */zanrovi				GET		none	none									lista zanrova
 */autori				GET		none	none									lista autora
