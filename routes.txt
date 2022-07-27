@@ -6,7 +6,7 @@ URL						TYPE	AUTH	PARAMETERS								RESULT
 */user					GET		token	none									jmbg, name, email, username, photo
 */edit-user				POST	token	name/email/username/old pass/new pass	success/invalid old pass
 */zahtjevi				GET		token	zaduzene?/vracene?/rezervacije?			lista knjiga
-/izbrisi-transakciju	POST	token	id										success/failure(invalid id/knjiga nije vracena)
+*/izbrisi-transakciju	DELETE	token	id										success/failure(invalid id/knjiga nije vracena)
 */rezervisi				POST	token	id, datum od, datum do					none
 */aktivnosti			GET		token	none									lista aktivnosti vezanih za korisnika
 */book					GET		none	id										naslov, authori, opis, na raspolaganju/izdato, br. komada, kategorije, zanrovi, izdavac, god. izdavanja

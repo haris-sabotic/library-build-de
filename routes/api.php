@@ -181,6 +181,34 @@ Route::get('/zahtjevi', function (Request $request) {
     }
 })->middleware(['auth:sanctum']);
 
+Route::delete('/izbrisi-transakciju', function (Request $request) {
+    $user = $request->user();
+
+    $id = $request->get('id');
+    $type = $request->get('type');
+
+    if ($type == 'rezervacije') {
+
+    } else if ($type == 'vracene' || $type == 'zaduzivanje') {
+        $rent =  DB::table('rents')
+            ->where('student_id', $user->id)
+            ->where('id', $id);
+
+        if (!$rent->exists()) {
+            return [ "msg" => "invalid id" ];
+        }
+
+        if ($rent->value('return_date') == null) {
+            return [ "msg" => "knjiga nije vracena" ];
+        }
+
+        $rent->delete();
+
+        return [ "msg" => "success" ];
+    }
+
+})->middleware(['auth:sanctum']);
+
 Route::post('/rezervisi', function (Request $request) {
     $user = $request->user();
     $bookId = $request->get('id');
