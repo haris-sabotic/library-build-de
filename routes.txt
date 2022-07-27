@@ -1,0 +1,20 @@
+URL						TYPE	AUTH	PARAMETERS								RESULT
+
+*/login					POST	none	username, password						token/invalid login
+/forgot-username		POST	none	email									success/invalid email
+/forgot-password		POST	none	username								success/invalid username
+*/user					GET		token	none									jmbg, name, email, username, photo
+*/edit-user				POST	token	name/email/username/old pass/new pass	success/invalid old pass
+/zahtjevi				GET		token	zaduzene?/vracene?/rezervacije?			lista knjiga
+/izbrisi-transakciju	POST	token	id										success/failure(invalid id/knjiga nije vracena)
+*/rezervisi				POST	token	id, datum od, datum do					none
+*/aktivnosti			GET		token	none									lista aktivnosti vezanih za korisnika
+*/book					GET		none	id										naslov, authori, opis, na raspolaganju/izdato, br. komada, kategorije, zanrovi, izdavac, god. izdavanja
+*/books					GET		none	none									lista knjiga
++/search-books			GET		none	query, filters							lista knjiga
+*/kategorije			GET		none	none									lista kategorija
+*/zanrovi				GET		none	none									lista zanrova
+*/autori				GET		none	none									lista autora
+*/izdavaci				GET		none	none									lista izdavaca
+*/pisma					GET		none	none									lista pisama
+*/jezici				GET		none	none									lista jezika

@@ -169,6 +169,42 @@ Route::get('/search-books', function (Request $request) {
         $data = $data->where('publisher_id', $request->get('publisher'));
     }
 
+    if ($request->get('genres')) {
+        $bookGenres = DB::table('book_genres')
+                        ->whereIn('genre_id', $request->get('genres'))
+                        ->get();
+
+        $bookGenresIds = [];
+        foreach($bookGenres as $bookGenre) {
+            array_push($bookGenresIds, $bookGenre->book_id);
+        }
+        $data = $data->whereIn('id', $bookGenresIds);
+    }
+
+    if ($request->get('categories')) {
+        $bookCategories = DB::table('book_categories')
+                        ->whereIn('category_id', $request->get('categories'))
+                        ->get();
+
+        $bookCategoriesIds = [];
+        foreach($bookCategories as $bookCategory) {
+            array_push($bookCategoriesIds, $bookCategory->book_id);
+        }
+        $data = $data->whereIn('id', $bookCategoriesIds);
+    }
+
+    if ($request->get('authors')) {
+        $bookAuthors = DB::table('book_authors')
+                        ->whereIn('author_id', $request->get('authors'))
+                        ->get();
+
+        $bookAuthorsIds = [];
+        foreach($bookAuthors as $bookAuthor) {
+            array_push($bookAuthorsIds, $bookAuthor->book_id);
+        }
+        $data = $data->whereIn('id', $bookAuthorsIds);
+    }
+
     return $data->get();
 });
 
