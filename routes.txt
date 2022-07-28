@@ -1,7 +1,7 @@
 URL						TYPE	AUTH	PARAMETERS								RESULT
 
 */login					POST	none	username, password						token/invalid login
-/forgot-username		POST	none	email									success/invalid email
+*/forgot-username		POST	none	email									success/invalid email
 */forgot-password		POST	none	username								success/invalid username
 */user					GET		token	none									jmbg, name, email, username, photo
 */edit-user				POST	token	name/email/username/old pass/new pass	success/invalid old pass

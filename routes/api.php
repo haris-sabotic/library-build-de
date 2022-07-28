@@ -20,6 +20,8 @@ use App\Models\Reservation;
 
 use App\Http\Controllers\ResetPasswordController;
 
+use App\Mail\UsernameMail;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -53,9 +55,6 @@ Route::post('/login', function (Request $request) {
 });
 
 Route::post('/forgot-password', function (Request $request) {
-    $username = $request['username'];
-
-
     $user = User::query()->where('username', $request['username'])->first();
 
     if ($user == null) {
@@ -65,6 +64,18 @@ Route::post('/forgot-password', function (Request $request) {
     $controller = new ResetPasswordController();
 
     $controller->sendResetPasswordMail($request);
+
+    return ['msg'=> 'success'];
+});
+
+Route::post('/forgot-username', function (Request $request) {
+    $user = User::query()->where('email', $request['email'])->first();
+
+    if ($user == null) {
+        return ['msg'=> 'invalid email'];
+    }
+
+    Mail::to($user->email)->send(new UsernameMail($user->username));
 
     return ['msg'=> 'success'];
 });
