@@ -18,6 +18,8 @@ use App\Models\BookGenre;
 use App\Models\User;
 use App\Models\Reservation;
 
+use App\Http\Controllers\ResetPasswordController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -48,6 +50,23 @@ Route::post('/login', function (Request $request) {
         'msg' => 'success',
         'plainTextToken' => $token->plainTextToken,
     ];
+});
+
+Route::post('/forgot-password', function (Request $request) {
+    $username = $request['username'];
+
+
+    $user = User::query()->where('username', $request['username'])->first();
+
+    if ($user == null) {
+        return ['msg'=> 'invalid username'];
+    }
+
+    $controller = new ResetPasswordController();
+
+    $controller->sendResetPasswordMail($request);
+
+    return ['msg'=> 'success'];
 });
 
 Route::get('/user', function (Request $request) {

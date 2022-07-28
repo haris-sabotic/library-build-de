@@ -179,6 +179,9 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/policy', [\App\Http\Controllers\PolicyController::class, 'index'])->name('policy');
     Route::post('/changeDeadline', [\App\Http\Controllers\PolicyController::class, 'changeDeadline'])->name('changeDeadline');
 
+    Route::get('/resetPassword/{token}', [\App\Http\Controllers\ResetPasswordController::class, 'show'])->name('resetPassword');
+    Route::post('/setNewPassword', [\App\Http\Controllers\ResetPasswordController::class, 'setNewPassword'])->name('setNewPassword');
+
 });
 
 require __DIR__.'/auth.php';
