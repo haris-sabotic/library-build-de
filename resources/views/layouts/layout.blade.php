@@ -421,49 +421,4 @@
     </p>
 </div>
 
-<!-- This code will show up when we press reset password -->
-<div
-    class="fixed top-0 left-0 items-center justify-center hidden w-full h-screen bg-black bg-opacity-50 modal">
-    <!-- Modal -->
-    <div class="w-[500px] bg-white rounded shadow-lg md:w-1/3">
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between px-[30px] py-[20px] border-b">
-            <h3>Resetuj šifru: {{Auth::user()->name}}</h3>
-            <button class="text-black close-modal focus:outline-none">
-                <span aria-hidden="true" class="text-[30px]">&times;</span>
-            </button>
-        </div>
-        <!-- Modal Body -->
-        <form class="forma" method="POST" action="{{route('resetPassword', ['user' => Auth::user()])}}">
-            @csrf
-            <div class="flex flex-col px-[30px] py-[30px]">
-                <div class="flex flex-col pb-[30px]">
-                    <span>Unesi novu šifru <span class="text-red-500">*</span></span>
-                    <input class="h-[40px] px-2 py-2 text-base bg-white border border-gray-300 shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#576cdf]" type="password" name="pwReset" id="pwResetLibrarian">
-                    @error('pwReset')
-                        <div class="text-red-500">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="flex flex-col pb-[30px]">
-                    <span>Ponovi šifru <span class="text-red-500">*</span></span>
-                    <input class="h-[40px] px-2 py-2 text-base bg-white border border-gray-300 shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#576cdf]" type="password" name="pw2Reset" id="pw2ResetLibrarian">
-                    @error('pw2Reset')
-                        <div class="text-red-500">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            <div class="flex items-center justify-end px-[30px] py-[20px] border-t w-100 text-white">
-                <button type="reset"
-                    class="text-center shadow-lg mr-[15px] w-[150px] focus:outline-none text-sm py-2.5 px-5 transition duration-300 ease-in bg-[#F44336] hover:bg-[#F55549] rounded-[5px]">
-                    <i class="fas fa-times mr-[7px]"></i> Poništi 
-                </button>
-                <button id="resetPassword" type="submit"
-                    class="shadow-lg w-[150px] disabled:opacity-50 focus:outline-none text-sm py-2.5 px-5 transition duration-300 ease-in rounded-[5px] hover:bg-[#46A149] bg-[#4CAF50]">
-                    <i class="fas fa-check mr-[7px]"></i> Sačuvaj 
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
 </body>
