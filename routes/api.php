@@ -264,22 +264,19 @@ Route::get('/aktivnosti', function (Request $request) {
     return Reservation::All()->where('student_id', $user->id);
 })->middleware(['auth:sanctum']);
 
-Route::get('/book', function (Request $request) {
-    $id = $request->get('id');
-    $book = Book::where('id', $id);
-
+Route::get('/books/{book}', function (Book $book) {
     $authors = [];
-    foreach(BookAuthor::All()->where('book_id', $id) as $va) {
+    foreach(BookAuthor::All()->where('book_id', $book->id) as $va) {
         array_push($authors, Author::find($va->author_id)->name);
     }
 
     $categories = [];
-    foreach(BookCategory::All()->where('book_id', $id) as $vc) {
+    foreach(BookCategory::All()->where('book_id', $book->id) as $vc) {
         array_push($categories, Category::find($vc->category_id)->name);
     }
 
     $genres = [];
-    foreach(BookGenre::All()->where('book_id', $id) as $vg) {
+    foreach(BookGenre::All()->where('book_id', $book->id) as $vg) {
         array_push($genres, Genre::find($vg->genre_id)->name);
     }
 

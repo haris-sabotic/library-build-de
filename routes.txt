@@ -9,7 +9,7 @@ URL						TYPE	AUTH	PARAMETERS								RESULT
 */izbrisi-transakciju	DELETE	token	id										success/failure(invalid id/knjiga nije vracena)
 */rezervisi				POST	token	id, datum od, datum do					none
 */aktivnosti			GET		token	none									lista aktivnosti vezanih za korisnika
-*/book					GET		none	id										naslov, authori, opis, na raspolaganju/izdato, br. komada, kategorije, zanrovi, izdavac, god. izdavanja
+*/books/{id}			GET		none	none									naslov, authori, opis, na raspolaganju/izdato, br. komada, kategorije, zanrovi, izdavac, god. izdavanja
 */books					GET		none	none									lista knjiga
 */search-books			GET		none	query, filters							lista knjiga
 */kategorije			GET		none	none									lista kategorija
