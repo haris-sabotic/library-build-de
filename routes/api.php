@@ -46,6 +46,9 @@ Route::post('/login', function (Request $request) {
 
     $user = User::where('username', $username)->first();
 
+    // delete all previous tokens
+    $user->tokens()->delete();
+
     $token = $user->createToken('authToken');
 
     return [
