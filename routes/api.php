@@ -284,15 +284,15 @@ Route::get('/books/{book}', function (Book $book) {
     }
 
     $result = [
-        'title' => $book->value('title'),
+        'title' => $book->title,
         'authors' => $authors,
-        'summary' => $book->value('summary'),
-        'available' => $book->value('quantity') > 0,
-        'quantity' => $book->value('quantity'),
+        'summary' => $book->summary,
+        'available' => $book->quantity > 0,
+        'quantity' => $book->quantity,
         'categories' => $categories,
         'genres' => $genres,
-        'publisher' => Publisher::find($book->value('publisher_id'))->name,
-        'publishYear' => $book->value('publishYear'),
+        'publisher' => Publisher::find($book->publisher_id)->name,
+        'publishYear' => $book->publishYear,
     ];
 
     return $result;
