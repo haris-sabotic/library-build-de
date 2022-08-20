@@ -117,6 +117,16 @@ Route::post('/edit-user', function (Request $request) {
     return [ 'msg' => 'success' ];
 })->middleware(['auth:sanctum']);
 
+
+/*
+ {
+    "id": 73827328,
+    "bookId": 11,
+    "dateFrom": "2021-06-08",
+    "dateTo": "2021-06-28" | "",
+    "type": "reservation" | "rent" | "reservation rejected",
+ }
+*/
 Route::get('/zahtjevi', function (Request $request) {
     $user = $request->user();
 
@@ -130,10 +140,29 @@ Route::get('/zahtjevi', function (Request $request) {
             ->get();
 
         foreach($reservations as $reservation) {
+            $type = 'reservation';
+
+            $reservation_status = DB::table('reservation_statuses')
+                ->where('reservation_id', $reservation->id)
+                ->get()
+                ->first();
+            
+            $status = null;
+            if ($reservation_status != null) {
+                $status = $reservation_status->statusReservation_id;
+            }
+            
+            if ($status == 3) {
+                $type = 'reservation rejected';
+            }
+
+
             array_push($data, [
-                "id" => $reservation->id,
-                "book_id" => $reservation->book_id, 
-                "type" => 'rezervacija', 
+                'id' => $reservation->id,
+                'bookId' => $reservation->book_id,
+                'dateFrom' => $reservation->reservation_date,
+                'dateTo' => $reservation->close_date,
+                'type' => $type, 
             ]);
         }
 
@@ -143,23 +172,22 @@ Route::get('/zahtjevi', function (Request $request) {
             ->get();
 
         foreach($rents as $rent) {
-            if ($rent->return_date == null) {
-                array_push($data, [
-                    "id" => $rent->id,
-                    "book_id" => $rent->book_id, 
-                    "type" => 'zaduzivanje', 
-                ]);
-            } else {
-                array_push($data, [
-                    "id" => $rent->id,
-                    "book_id" => $rent->book_id, 
-                    "type" => 'vracena', 
-                ]);
+            $return_date = '';
+            if ($rent->librarian_received_id != null) {
+                $return_date = $rent->return_date;
             }
+
+            array_push($data, [
+                'id' => $rent->id,
+                'bookId' => $rent->book_id,
+                'dateFrom' => $rent->rent_date,
+                'dateTo' => $return_date,
+                'type' => 'rent', 
+            ]);
         }
 
         return $data;
-    } else if ($filter == 'rezervacije') {
+    } else if ($filter == 'reservations') {
         $data = [];
 
         $reservations =  DB::table('reservations')
@@ -167,15 +195,34 @@ Route::get('/zahtjevi', function (Request $request) {
             ->get();
 
         foreach($reservations as $reservation) {
+            $type = 'reservation';
+
+            $reservation_status = DB::table('reservation_statuses')
+                ->where('reservation_id', $reservation->id)
+                ->get()
+                ->first();
+            
+            $status = null;
+            if ($reservation_status != null) {
+                $status = $reservation_status->statusReservation_id;
+            }
+            
+            if ($status == 3) {
+                $type = 'reservation rejected';
+            }
+
+
             array_push($data, [
-                "id" => $reservation->id,
-                "book_id" => $reservation->book_id, 
-                "type" => 'rezervacija', 
+                'id' => $reservation->id,
+                'bookId' => $reservation->book_id,
+                'dateFrom' => $reservation->reservation_date,
+                'dateTo' => $reservation->close_date,
+                'type' => $type, 
             ]);
         }
 
         return $data;
-    } else if ($filter == 'zaduzene') {
+    } else if ($filter == 'rents') {
         $data = [];
 
         $rents =  DB::table('rents')
@@ -183,17 +230,22 @@ Route::get('/zahtjevi', function (Request $request) {
             ->get();
 
         foreach($rents as $rent) {
-            if ($rent->return_date == null) {
-                array_push($data, [
-                    "id" => $rent->id,
-                    "book_id" => $rent->book_id, 
-                    "type" => 'zaduzivanje', 
-                ]);
+            $return_date = '';
+            if ($rent->librarian_received_id != null) {
+                $return_date = $rent->return_date;
             }
+
+            array_push($data, [
+                'id' => $rent->id,
+                'bookId' => $rent->book_id,
+                'dateFrom' => $rent->rent_date,
+                'dateTo' => $return_date,
+                'type' => 'rent', 
+            ]);
         }
 
         return $data;
-    } else if ($filter == 'vracene') {
+    } else if ($filter == 'returned') {
         $data = [];
 
         $rents =  DB::table('rents')
@@ -201,11 +253,15 @@ Route::get('/zahtjevi', function (Request $request) {
             ->get();
 
         foreach($rents as $rent) {
-            if ($rent->return_date != null) {
+            if ($rent->librarian_received_id != null) {
+                $return_date = $rent->return_date;
+
                 array_push($data, [
-                    "id" => $rent->id,
-                    "book_id" => $rent->book_id, 
-                    "type" => 'vracena', 
+                    'id' => $rent->id,
+                    'bookId' => $rent->book_id,
+                    'dateFrom' => $rent->rent_date,
+                    'dateTo' => $return_date,
+                    'type' => 'rent', 
                 ]);
             }
         }
