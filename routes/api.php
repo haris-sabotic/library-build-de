@@ -338,6 +338,18 @@ Route::get('/books/{book}', function (Book $book) {
         array_push($genres, Genre::find($vg->genre_id)->name);
     }
 
+    $photo = '';
+    $book_gallery = DB::table('galeries')
+                    ->where('book_id', $book->id);
+    if ($book_gallery != null) {
+        $cover = $book_gallery->where('cover', 0);
+
+        if ($cover->first() != null) {
+            $photo = $cover->first()->photo;
+        }
+    }
+
+
     $result = [
         'title' => $book->title,
         'authors' => $authors,
@@ -348,6 +360,7 @@ Route::get('/books/{book}', function (Book $book) {
         'genres' => $genres,
         'publisher' => Publisher::find($book->publisher_id)->name,
         'publishYear' => $book->publishYear,
+        'photo' => $photo
     ];
 
     return $result;
