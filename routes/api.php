@@ -157,9 +157,15 @@ Route::get('/zahtjevi', function (Request $request) {
             }
 
 
+            $librarian = DB::table('users')
+                ->where('id', $reservation->librarian_id)
+                ->get()
+                ->first();
+
             array_push($data, [
                 'id' => $reservation->id,
                 'bookId' => $reservation->book_id,
+                'librarian' => $librarian->name,
                 'dateFrom' => $reservation->reservation_date,
                 'dateTo' => $reservation->close_date,
                 'type' => $type, 
@@ -177,9 +183,16 @@ Route::get('/zahtjevi', function (Request $request) {
                 $return_date = $rent->return_date;
             }
 
+
+            $librarian = DB::table('users')
+                ->where('id', $rent->librarian_id)
+                ->get()
+                ->first();
+
             array_push($data, [
                 'id' => $rent->id,
                 'bookId' => $rent->book_id,
+                'librarian' => $librarian->name,
                 'dateFrom' => $rent->rent_date,
                 'dateTo' => $return_date,
                 'type' => 'rent', 
@@ -212,9 +225,15 @@ Route::get('/zahtjevi', function (Request $request) {
             }
 
 
+            $librarian = DB::table('users')
+                ->where('id', $reservation->librarian_id)
+                ->get()
+                ->first();
+
             array_push($data, [
                 'id' => $reservation->id,
                 'bookId' => $reservation->book_id,
+                'librarian' => $librarian->name,
                 'dateFrom' => $reservation->reservation_date,
                 'dateTo' => $reservation->close_date,
                 'type' => $type, 
@@ -235,9 +254,16 @@ Route::get('/zahtjevi', function (Request $request) {
                 $return_date = $rent->return_date;
             }
 
+
+            $librarian = DB::table('users')
+                ->where('id', $rent->librarian_id)
+                ->get()
+                ->first();
+
             array_push($data, [
                 'id' => $rent->id,
                 'bookId' => $rent->book_id,
+                'librarian' => $librarian->name,
                 'dateFrom' => $rent->rent_date,
                 'dateTo' => $return_date,
                 'type' => 'rent', 
@@ -256,9 +282,16 @@ Route::get('/zahtjevi', function (Request $request) {
             if ($rent->librarian_received_id != null) {
                 $return_date = $rent->return_date;
 
+
+                $librarian = DB::table('users')
+                    ->where('id', $rent->librarian_id)
+                    ->get()
+                    ->first();
+
                 array_push($data, [
                     'id' => $rent->id,
                     'bookId' => $rent->book_id,
+                    'librarian' => $librarian->name,
                     'dateFrom' => $rent->rent_date,
                     'dateTo' => $return_date,
                     'type' => 'rent', 
