@@ -276,26 +276,25 @@ Route::delete('/izbrisi-transakciju', function (Request $request) {
     $id = $request->get('id');
     $type = $request->get('type');
 
-    if ($type == 'rezervacije') {
+    if ($type == 'reservation' || $type == 'reservation rejected') {
+        $reservation =  DB::table('reservations')
+            ->where('student_id', $user->id)
+            ->where('id', $id);
 
-    } else if ($type == 'vracene' || $type == 'zaduzivanje') {
+        $reservation->delete();
+    } else if ($type == 'rent') {
         $rent =  DB::table('rents')
             ->where('student_id', $user->id)
             ->where('id', $id);
 
-        if (!$rent->exists()) {
-            return [ "msg" => "invalid id" ];
-        }
-
-        if ($rent->value('return_date') == null) {
-            return [ "msg" => "knjiga nije vracena" ];
+        if ($rent->librarian_received_id == null) {
+            return [ "msg" => "Book not returned" ];
         }
 
         $rent->delete();
-
-        return [ "msg" => "success" ];
     }
 
+    return [ "msg" => "success" ];
 })->middleware(['auth:sanctum']);
 
 Route::post('/rezervisi', function (Request $request) {
