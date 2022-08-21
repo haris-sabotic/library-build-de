@@ -33,6 +33,50 @@ use App\Mail\UsernameMail;
 |
 */
 
+function getBookDetails(Book $book) {
+    $authors = [];
+    foreach(BookAuthor::All()->where('book_id', $book->id) as $va) {
+        array_push($authors, Author::find($va->author_id)->name);
+    }
+
+    $categories = [];
+    foreach(BookCategory::All()->where('book_id', $book->id) as $vc) {
+        array_push($categories, Category::find($vc->category_id)->name);
+    }
+
+    $genres = [];
+    foreach(BookGenre::All()->where('book_id', $book->id) as $vg) {
+        array_push($genres, Genre::find($vg->genre_id)->name);
+    }
+
+    $photo = '';
+    $book_gallery = DB::table('galeries')
+                    ->where('book_id', $book->id);
+    if ($book_gallery != null) {
+        $cover = $book_gallery->where('cover', 0);
+
+        if ($cover->first() != null) {
+            $photo = $cover->first()->photo;
+        }
+    }
+
+
+    $result = [
+        'title' => $book->title,
+        'authors' => $authors,
+        'summary' => $book->summary,
+        'available' => $book->quantity > 0,
+        'quantity' => $book->quantity,
+        'categories' => $categories,
+        'genres' => $genres,
+        'publisher' => Publisher::find($book->publisher_id)->name,
+        'publishYear' => $book->publishYear,
+        'photo' => $photo
+    ];
+
+    return $result;
+}
+
 Route::post('/login', function (Request $request) {
     $username = $request->get('username');
     $password = $request->get('password');
@@ -164,7 +208,7 @@ Route::get('/zahtjevi', function (Request $request) {
 
             array_push($data, [
                 'id' => $reservation->id,
-                'bookId' => $reservation->book_id,
+                'book' => array_intersect_key(getBookDetails(Book::find($reservation->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                 'librarian' => $librarian->name,
                 'dateFrom' => $reservation->reservation_date,
                 'dateTo' => $reservation->close_date,
@@ -191,7 +235,7 @@ Route::get('/zahtjevi', function (Request $request) {
 
             array_push($data, [
                 'id' => $rent->id,
-                'bookId' => $rent->book_id,
+                'book' => array_intersect_key(getBookDetails(Book::find($rent->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                 'librarian' => $librarian->name,
                 'dateFrom' => $rent->rent_date,
                 'dateTo' => $return_date,
@@ -232,7 +276,7 @@ Route::get('/zahtjevi', function (Request $request) {
 
             array_push($data, [
                 'id' => $reservation->id,
-                'bookId' => $reservation->book_id,
+                'book' => array_intersect_key(getBookDetails(Book::find($reservation->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                 'librarian' => $librarian->name,
                 'dateFrom' => $reservation->reservation_date,
                 'dateTo' => $reservation->close_date,
@@ -262,7 +306,7 @@ Route::get('/zahtjevi', function (Request $request) {
 
             array_push($data, [
                 'id' => $rent->id,
-                'bookId' => $rent->book_id,
+                'book' => array_intersect_key(getBookDetails(Book::find($rent->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                 'librarian' => $librarian->name,
                 'dateFrom' => $rent->rent_date,
                 'dateTo' => $return_date,
@@ -290,7 +334,7 @@ Route::get('/zahtjevi', function (Request $request) {
 
                 array_push($data, [
                     'id' => $rent->id,
-                    'bookId' => $rent->book_id,
+                    'book' => array_intersect_key(getBookDetails(Book::find($rent->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                     'librarian' => $librarian->name,
                     'dateFrom' => $rent->rent_date,
                     'dateTo' => $return_date,
@@ -356,47 +400,7 @@ Route::get('/aktivnosti', function (Request $request) {
 })->middleware(['auth:sanctum']);
 
 Route::get('/books/{book}', function (Book $book) {
-    $authors = [];
-    foreach(BookAuthor::All()->where('book_id', $book->id) as $va) {
-        array_push($authors, Author::find($va->author_id)->name);
-    }
-
-    $categories = [];
-    foreach(BookCategory::All()->where('book_id', $book->id) as $vc) {
-        array_push($categories, Category::find($vc->category_id)->name);
-    }
-
-    $genres = [];
-    foreach(BookGenre::All()->where('book_id', $book->id) as $vg) {
-        array_push($genres, Genre::find($vg->genre_id)->name);
-    }
-
-    $photo = '';
-    $book_gallery = DB::table('galeries')
-                    ->where('book_id', $book->id);
-    if ($book_gallery != null) {
-        $cover = $book_gallery->where('cover', 0);
-
-        if ($cover->first() != null) {
-            $photo = $cover->first()->photo;
-        }
-    }
-
-
-    $result = [
-        'title' => $book->title,
-        'authors' => $authors,
-        'summary' => $book->summary,
-        'available' => $book->quantity > 0,
-        'quantity' => $book->quantity,
-        'categories' => $categories,
-        'genres' => $genres,
-        'publisher' => Publisher::find($book->publisher_id)->name,
-        'publishYear' => $book->publishYear,
-        'photo' => $photo
-    ];
-
-    return $result;
+    return getBookDetails($book);
 });
 
 Route::get('/books', function () {
