@@ -383,14 +383,16 @@ Route::post('/rezervisi', function (Request $request) {
     $reservation = new Reservation();
 
     $reservation->book_id             = $bookId;
-    $reservation->librarian_id        = Auth::id();
+    $reservation->librarian_id        = DB::table('users')->where('name', 'admin')->first()->id;
     $reservation->student_id          = $user->id;
     $reservation->reservation_date    = $dateFrom;
     $reservation->close_date          = $dateTo;
     $reservation->request_date        = now();
     $reservation->closeReservation_id = 5;
 
-    $reservation->save();
+	$reservation->save();
+
+	return ['msg' => 'success'];
 })->middleware(['auth:sanctum']);
 
 Route::get('/aktivnosti', function (Request $request) {
