@@ -396,7 +396,29 @@ Route::post('/rezervisi', function (Request $request) {
 Route::get('/aktivnosti', function (Request $request) {
     $user = $request->user();
 
-    return Reservation::All()->where('student_id', $user->id);
+    $reservations = DB::table('reservations')
+                    ->selectRaw('book_id, librarian_id, request_date as date, \'reservation\' as type')
+                    ->where('student_id', $user->id);
+
+    $dbresult = DB::table('rents')
+              ->selectRaw('book_id, librarian_id, rent_date as date, \'rent\' as type')
+              ->where('student_id', $user->id)
+              ->union($reservations)
+              ->orderByDesc('date')
+              ->get();
+
+    
+    $result = [];
+    foreach ($dbresult as $activity) {
+        array_push($result, [
+            'book' => Book::find($activity->book_id)->title,
+            'librarian' => User::find($activity->librarian_id)->name,
+            'date' => $activity->date,
+            'type' => $activity->type
+        ]);
+    }
+    
+    return $result;
 })->middleware(['auth:sanctum']);
 
 Route::get('/books/{book}', function (Book $book) {
