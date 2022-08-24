@@ -414,6 +414,7 @@ Route::get('/aktivnosti', function (Request $request) {
     foreach ($dbresult as $activity) {
         array_push($result, [
             'book' => Book::find($activity->book_id)->title,
+            'photo' => User::find($activity->librarian_id)->photo,
             'librarian' => User::find($activity->librarian_id)->name,
             'date' => $activity->date,
             'type' => $activity->type
