@@ -82,10 +82,10 @@ Route::post('/login', function (Request $request) {
     $password = $request->get('password');
 
     if (!Auth::attempt(['username' => $username, 'password' => $password])) {
-        return [
+        return response()->json([
             'msg' => 'failure',
             'plainTextToken' => null,
-        ];
+        ], 401);
     }
 
     $user = User::where('username', $username)->first();
@@ -105,7 +105,9 @@ Route::post('/forgot-password', function (Request $request) {
     $user = User::query()->where('username', $request['username'])->first();
 
     if ($user == null) {
-        return ['msg'=> 'invalid username'];
+        return response()->json([
+            'msg' => 'invalid username'
+        ], 500);
     }
 
     $controller = new ResetPasswordController();
@@ -119,7 +121,9 @@ Route::post('/forgot-username', function (Request $request) {
     $user = User::query()->where('email', $request['email'])->first();
 
     if ($user == null) {
-        return ['msg'=> 'invalid email'];
+        return response()->json([
+            'msg' => 'invalid email'
+        ], 500);
     }
 
     Mail::to($user->email)->send(new UsernameMail($user->username));
@@ -147,7 +151,9 @@ Route::post('/edit-user', function (Request $request) {
     $newPass = $request->get('newPass');
 
     if (!Auth::guard('web')->attempt(['username' => $user->username, 'password' => $oldPass])) {
-        return [ 'msg' => 'old password invalid' ];
+        return response()->json([
+            'msg' => 'old password invalid'
+        ], 401);
     }
 
 
@@ -365,7 +371,9 @@ Route::delete('/izbrisi-transakciju', function (Request $request) {
             ->where('id', $id);
 
         if ($rent->librarian_received_id == null) {
-            return [ "msg" => "Book not returned" ];
+                return response()->json([
+                    'msg' => 'book not returned'
+                ], 500);
         }
 
         $rent->delete();
