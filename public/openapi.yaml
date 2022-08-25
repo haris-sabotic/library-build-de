@@ -1,0 +1,786 @@
+openapi: 3.0.0
+info:
+  title: Online library
+  version: 1.0.0
+servers:
+  - url: https://tim7.ictcortex.me/api
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                example: "invalid token"
+
+paths:
+  /login:
+    post:
+      summary: Login with a username and password
+      parameters:
+        - name: username
+          in: query
+          description: Username
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: Username
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Login success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "success"
+                  plainTextToken:
+                    type: string
+                    example: "27|Qv1aXddrHhoCRJH9bEkplyQBdtwwIAX9md7178Na"
+        401:
+          description: Invalid username and/or password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "failure"
+                  plainTextToken:
+                    type: string
+                    example: null
+                    
+  /forgot-username:
+    post:
+      summary: Request an email containing your username
+      parameters:
+        - name: email
+          in: query
+          description: Email
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Email was sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "success"
+        500:
+          description: No user with the given email exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "invalid email"
+                    
+  /forgot-password:
+    post:
+      summary: Request an email containing a link to reset your password
+      parameters:
+        - name: username
+          in: query
+          description: Username
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Email was sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "success"
+        500:
+          description: No user with the given username exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "invalid email"
+                    
+  /user:
+    get:
+      summary: Get current user data
+      security:
+        - bearerAuth: []
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          description: User data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jmbg:
+                    type: string
+                    example: "1869507997853"
+                  name:
+                    type: string
+                    example: "Haris Sabotic"
+                  email:
+                    type: string
+                    example: "haris.sinfo16@gmail.com"
+                  username:
+                    type: string
+                    example: "haris"
+                  photo:
+                    type: string
+                    example: "sample1_1660957917.jpeg"
+
+  /edit-user:
+    post:
+      summary: Edit current user data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: query
+          description: Name
+          required: true
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Email
+          required: true
+          schema:
+            type: string
+        - name: username
+          in: query
+          description: Username
+          required: true
+          schema:
+            type: string
+        - name: oldPass
+          in: query
+          description: User's current password
+          required: true
+          schema:
+            type: string
+        - name: newPass
+          in: query
+          description: New password for the user
+          required: true
+          schema:
+            type: string
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          description: User data changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "success"
+        403:
+          description: User's current password(oldPass) invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "old password invalid"
+
+  /zahtjevi:
+    get:
+      summary: Get current user's reservations and rents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: filter
+          in: query
+          description: Can be "reservations", "rents", "returned" or blank
+          schema:
+            type: string
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          description: Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      example: "1"
+                    book:
+                      type: object
+                      example:
+                          title: "Cassidy Rippin"
+                          authors: [
+                            "Jammie Jones",
+                            "Johnnie Cronin",
+                            "Johnnie Cronin"
+                          ]
+                    librarian:
+                      type: string
+                      example: "Emilija Pribanovic"
+                    dateFrom:
+                      type: string
+                      example: "2022-08-20"
+                    dateTo:
+                      type: string
+                      description: Can be empty in case type is rent, which means the book hasn't been returned
+                      example: "2022-08-19"
+                    type:
+                      type: string
+                      description: Can be "reservation rejected", "reservation" or "rent"
+                      example: "reservation rejected"
+
+  /izbrisi-transakciju:
+    delete:
+      summary: Delete one of the current user's reservations or rents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          description: Reservation or rent's ID
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Can be "reservation", "rent", or "reservation rejected"
+          schema:
+            type: string
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          description: Successfully deleted reservation or rent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "success"
+        500:
+          description: Tried deleting a rent when the book associated with it hasn't been returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "book not returned"
+
+  /rezervisi:
+    post:
+      summary: Make a reservation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          description: Book ID
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          description: Reservation's start date
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          description: Reservation's end date
+          schema:
+            type: string
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          description: Successfully created reservation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "success"
+
+  /aktivnosti:
+    get:
+      summary: Get a sorted list of all activities associated with the current user
+      security:
+        - bearerAuth: []
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          description: Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    book:
+                      type: string
+                      example: "Demarco Muller"
+                    photo:
+                      type: string
+                      example: "sample2_1661343898.jpeg"
+                    librarian:
+                      type: string
+                      example: "Emilija Pribanovic"
+                    date:
+                      type: string
+                      example: "2022-08-19 00:00:00"
+                    type:
+                      type: string
+                      description: Can be "reservation" or "rent"
+                      example: "reservation"
+
+  /books:
+    get:
+      summary: Get a list of all books in the library
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    script_id:
+                      type: integer
+                      example: 1
+                    language_id:
+                      type: integer
+                      example: 1
+                    binding_id:
+                      type: integer
+                      example: 1
+                    format_id:
+                      type: integer
+                      example: 1
+                    publisher_id:
+                      type: integer
+                      example: 1
+                    title:
+                      type: string
+                      example: "Cassidy Rippin"
+                    pages:
+                      type: string
+                      example: "321"
+                    publishYear:
+                      type: string
+                      example: "1500"
+                    ISBN:
+                      type: string
+                      example: "333-1-22-666666-1"
+                    quantity:
+                      type: string
+                      example: "39"
+                    rentedBooks:
+                      type: string
+                      example: "1"
+                    reservedBooks:
+                      type: string
+                      example: "3"
+                    summary:
+                      type: string
+                      example: "<p>Aliquid omnis soluta optio est.</p>"
+                    created_at:
+                      type: string
+                      example: "2022-08-19T21:41:21.000000Z"
+                    updated_at:
+                      type: string
+                      example: "2022-08-23T17:02:30.000000Z"
+  
+  /books/{book}:
+    get:
+      summary: Get a list of all books in the library
+      parameters:
+        - in: path
+          name: book
+          description: Book ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    example: "Demarco Muller"
+                  authors:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "Johnnie Cronin",
+                      "Erwin Fay"
+                    ]
+                  summary:
+                    type: string
+                    example: "Tenetur id quasi blanditiis explicabo."
+                  available:
+                    type: boolean
+                    example: true
+                  quantity:
+                    type: string
+                    example: "27"
+                  categories:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  genres:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "Poetry"
+                    ]
+                  publisher:
+                    type: string
+                    example: "BeoBook"
+                  publishYear:
+                    type: string
+                    example: "1647"
+                  photo:
+                    type: string
+                    example: ""
+
+  /search-books:
+    get:
+      summary: Search through books
+      parameters:
+        - in: query
+          name: query
+          description: Query for searching books by title
+          schema:
+            type: string
+        
+        - in: query
+          name: script
+          description: Script ID
+          schema:
+            type: integer
+        - in: query
+          name: language
+          description: Language ID
+          schema:
+            type: integer
+        - in: query
+          name: binding
+          description: Binding ID
+          schema:
+            type: integer
+        - in: query
+          name: format
+          description: Format ID
+          schema:
+            type: integer
+        - in: query
+          name: publisher
+          description: Publisher ID
+          schema:
+            type: integer
+        
+        - in: query
+          name: genres[]
+          description: Array of Genre IDs
+          schema:
+            type: array
+            items:
+              type: integer
+        - in: query
+          name: categories[]
+          description: Array of Category IDs
+          schema:
+            type: array
+            items:
+              type: integer
+        - in: query
+          name: authors[]
+          description: Array of Author IDs
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    script_id:
+                      type: integer
+                      example: 1
+                    language_id:
+                      type: integer
+                      example: 1
+                    binding_id:
+                      type: integer
+                      example: 1
+                    format_id:
+                      type: integer
+                      example: 1
+                    publisher_id:
+                      type: integer
+                      example: 1
+                    title:
+                      type: string
+                      example: "Cassidy Rippin"
+                    pages:
+                      type: string
+                      example: "321"
+                    publishYear:
+                      type: string
+                      example: "1500"
+                    ISBN:
+                      type: string
+                      example: "333-1-22-666666-1"
+                    quantity:
+                      type: string
+                      example: "39"
+                    rentedBooks:
+                      type: string
+                      example: "1"
+                    reservedBooks:
+                      type: string
+                      example: "3"
+                    summary:
+                      type: string
+                      example: "<p>Aliquid omnis soluta optio est.</p>"
+                    created_at:
+                      type: string
+                      example: "2022-08-19T21:41:21.000000Z"
+                    updated_at:
+                      type: string
+                      example: "2022-08-23T17:02:30.000000Z"
+
+  /kategorije:
+    get:
+      summary: List of book categories
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Food & Drink
+                    photo:
+                      type: string
+                      example: default.jpg
+                    description:
+                      type: string
+                      example: Animi voluptas ut dignissimos voluptatem nihil quasi.
+                    created_at:
+                      type: string
+                      example: null
+                    updated_at:
+                      type: string
+                      example: null
+
+  /zanrovi:
+    get:
+      summary: List of book genres
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Drama
+                    photo:
+                      type: string
+                      example: default.jpg
+                    description:
+                      type: string
+                      example: Sed ut totam cumque aliquam aut et.
+                    created_at:
+                      type: string
+                      example: null
+                    updated_at:
+                      type: string
+                      example: null
+
+  /autori:
+    get:
+      summary: List of book authors
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Jammie Jones
+                    photo:
+                      type: string
+                      example: default.jpg
+                    biography:
+                      type: string
+                      example: Eos odit voluptas ut similique dolores suscipit quo. Adipisci doloribus numquam ut nemo quas tenetur. Exercitationem doloribus sit corrupti eveniet omnis.
+                    created_at:
+                      type: string
+                      example: null
+                    updated_at:
+                      type: string
+                      example: null
+
+  /izdavaci:
+    get:
+      summary: List of book publishers
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Babun
+                    created_at:
+                      type: string
+                      example: null
+                    updated_at:
+                      type: string
+                      example: null
+
+  /pisma:
+    get:
+      summary: List of book scripts
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Latin
+                    created_at:
+                      type: string
+                      example: null
+                    updated_at:
+                      type: string
+                      example: null
+
+  /jezici:
+    get:
+      summary: List of book languages
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: English
+                    created_at:
+                      type: string
+                      example: null
+                    updated_at:
+                      type: string
+                      example: null
+
+  
