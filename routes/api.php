@@ -153,7 +153,7 @@ Route::post('/edit-user', function (Request $request) {
     if (!Auth::guard('web')->attempt(['username' => $user->username, 'password' => $oldPass])) {
         return response()->json([
             'msg' => 'old password invalid'
-        ], 401);
+        ], 403);
     }
 
 
