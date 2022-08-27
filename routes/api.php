@@ -370,7 +370,7 @@ Route::delete('/izbrisi-transakciju', function (Request $request) {
             ->where('student_id', $user->id)
             ->where('id', $id);
 
-        if ($rent->librarian_received_id == null) {
+        if ($rent->first()->librarian_received_id == null) {
                 return response()->json([
                     'msg' => 'book not returned'
                 ], 500);
