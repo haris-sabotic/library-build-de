@@ -26,6 +26,7 @@ use App\Mail\UsernameMail;
 
 use Illuminate\Pagination\Paginator;
 
+use App\Models\ReservationStatus;
 
 /*
 |--------------------------------------------------------------------------
@@ -407,6 +408,20 @@ Route::post('/rezervisi', function (Request $request) {
     $reservation->closeReservation_id = 5;
 
 	$reservation->save();
+
+
+    $reservationStatus = new ReservationStatus();
+
+    $reservationStatus->reservation_id       = $reservation->id;
+    $reservationStatus->statusReservation_id = 1;
+    $reservationStatus->date                 = $reservation->reservation_date;
+
+    $reservationStatus->save();
+
+
+    $reservedBook = Book::find($bookId);
+    $reservedBook->reservedBooks = $reservedBook->reservedBooks + 1;
+    $reservedBook->save();
 
 	return ['msg' => 'success'];
 })->middleware(['auth:sanctum']);
