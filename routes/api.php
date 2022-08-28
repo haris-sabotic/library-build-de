@@ -22,6 +22,9 @@ use App\Http\Controllers\ResetPasswordController;
 
 use App\Mail\UsernameMail;
 
+use Illuminate\Pagination\Paginator;
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -441,7 +444,24 @@ Route::get('/books/{book}', function (Book $book) {
 
 Route::get('/books', function () {
     $books = Book::All();
-    return $books;
+
+    $items = [];
+    foreach($books as $book) {
+        array_push($items, getBookDetails($book));
+    }
+
+
+    $pageName = 'page';
+    $perPage = 10;
+    $currentPage = Paginator::resolveCurrentPage($pageName);
+
+    $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage + 1);
+    $paginator = new Paginator($currentItems, $perPage, $currentPage, [
+        'path' => Paginator::resolveCurrentPath(),
+        'pageName' => $pageName,
+    ]);
+
+    return $paginator;
 });
 
 // for authors, genres and categories do the following in the query string:
@@ -501,35 +521,46 @@ Route::get('/search-books', function (Request $request) {
         $data = $data->whereIn('id', $bookAuthorsIds);
     }
 
-    return $data->get();
+    $pageName = 'page';
+    $perPage = 10;
+    $currentPage = Paginator::resolveCurrentPage($pageName);
+    $items = $data->get()->toArray();
+
+    $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage + 1);
+    $paginator = new Paginator($currentItems, $perPage, $currentPage, [
+        'path' => Paginator::resolveCurrentPath(),
+        'pageName' => $pageName,
+    ]);
+
+    return $paginator;
 });
 
 Route::get('/kategorije', function () {
-    $categories = Category::All();
+    $categories = Category::simplePaginate(10);
     return $categories;
 });
 
 Route::get('/zanrovi', function () {
-    $genres = Genre::All();
+    $genres = Genre::simplePaginate(10);
     return $genres;
 });
 
 Route::get('/autori', function () {
-    $authors = Author::All();
+    $authors = Author::simplePaginate(10);
     return $authors;
 });
 
 Route::get('/izdavaci', function () {
-    $publishers = Publisher::All();
+    $publishers = Publisher::simplePaginate(10);
     return $publishers;
 });
 
 Route::get('/pisma', function () {
-    $scripts = Script::All();
+    $scripts = Script::simplePaginate(10);
     return $scripts;
 });
 
 Route::get('/jezici', function () {
-    $langs = Language::All();
+    $langs = Language::simplePaginate(10);
     return $langs;
 });
