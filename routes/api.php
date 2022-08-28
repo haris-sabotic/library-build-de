@@ -9,6 +9,8 @@ use App\Models\Genre;
 use App\Models\Author;
 use App\Models\Publisher;
 use App\Models\Script;
+use App\Models\Binding;
+use App\Models\Format;
 use App\Models\Language;
 
 use App\Models\BookAuthor;
@@ -437,6 +439,18 @@ Route::get('/aktivnosti', function (Request $request) {
     
     return $result;
 })->middleware(['auth:sanctum']);
+
+
+Route::get('/book-spec/{book}', function (Book $book) {
+    return [
+        'pages' => $book->pages,
+        'pismo' => Script::find($book->script_id)->name,
+        'jezik' => Language::find($book->language_id)->name,
+        'povez' => Binding::find($book->binding_id)->name,
+        'format' => Format::find($book->format_id)->name,
+        'isbn' => $book->ISBN,
+    ];
+});
 
 Route::get('/books/{book}', function (Book $book) {
     return getBookDetails($book);
