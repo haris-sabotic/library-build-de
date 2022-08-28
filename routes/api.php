@@ -61,12 +61,15 @@ function getBookDetails(Book $book) {
     }
 
 
+    $quantity = $book->quantity - $book->reservedBooks - $book->rentedBooks;
+
     $result = [
+        'id' => $book->id,
         'title' => $book->title,
         'authors' => $authors,
         'summary' => $book->summary,
-        'available' => $book->quantity > 0,
-        'quantity' => $book->quantity,
+        'available' => $quantity > 0,
+        'quantity' => $quantity,
         'categories' => $categories,
         'genres' => $genres,
         'publisher' => Publisher::find($book->publisher_id)->name,
