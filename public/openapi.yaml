@@ -589,6 +589,11 @@ paths:
             type: string
         
         - in: query
+          name: availability
+          description: Can be "rented", "reserved", "available" or blank
+          schema:
+            type: string
+        - in: query
           name: script
           description: Script ID
           schema:
@@ -652,55 +657,50 @@ paths:
                     items: 
                       type: object
                       properties: 
-                        id: 
+                        id:
                           type: integer
-                          format: int32
-                          example: 1
-                        script_id: 
+                          example: 11
+                        title:
                           type: string
-                          example: 1
-                        language_id: 
+                          example: "Demarco Muller"
+                        authors:
+                          type: array
+                          items:
+                            type: string
+                          example: [
+                            "Johnnie Cronin",
+                            "Erwin Fay"
+                          ]
+                        summary:
                           type: string
-                          example: 1
-                        binding_id: 
+                          example: "Tenetur id quasi blanditiis explicabo."
+                        available:
+                          type: boolean
+                          example: true
+                        quantity:
+                          type: integer
+                          example: 27
+                        categories:
+                          type: array
+                          items:
+                            type: string
+                          example: []
+                        genres:
+                          type: array
+                          items:
+                            type: string
+                          example: [
+                            "Poetry"
+                          ]
+                        publisher:
                           type: string
-                          example: 1
-                        format_id: 
+                          example: "BeoBook"
+                        publishYear:
                           type: string
-                          example: 1
-                        publisher_id: 
+                          example: "1647"
+                        photo:
                           type: string
-                          example: 1
-                        title: 
-                          type: string
-                          example: Cassidy Rippin
-                        pages: 
-                          type: string
-                          example: 321
-                        publishYear: 
-                          type: string
-                          example: 1500
-                        ISBN: 
-                          type: string
-                          example: 333-1-22-666666-1
-                        quantity: 
-                          type: string
-                          example: 39
-                        rentedBooks: 
-                          type: string
-                          example: 1
-                        reservedBooks: 
-                          type: string
-                          example: 3
-                        summary: 
-                          type: string
-                          example: <p>Aliquid omnis soluta optio est.</p>
-                        created_at: 
-                          type: string
-                          example: 2022-08-19T21:41:21.000000Z
-                        updated_at: 
-                          type: string
-                          example: 2022-08-23T17:02:30.000000Z
+                          example: ""
                   first_page_url: 
                     type: string
                     example: https://tim7.ictcortex.me/api/search-books?page=1

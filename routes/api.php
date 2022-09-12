@@ -555,6 +555,24 @@ Route::get('/search-books', function (Request $request) {
     $currentPage = Paginator::resolveCurrentPage($pageName);
     $items = $data->get()->toArray();
 
+    foreach($items as $i => $item) {
+        $items[$i] = getBookDetails(Book::find($item['id']));
+    }
+
+    if ($request->get('availability')) {
+        $availablity = $request->get('availability');
+
+        if ($availablity == 'available') {
+            $items = array_filter($items, function ($book) {
+                return $book['available'];
+            });
+        } else if ($availablity == 'rented' || $availablity == 'reserved') {
+            $items = array_filter($items, function ($book) {
+                return !$book['available'];
+            });
+        }
+    }
+
     $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage + 1);
     $paginator = new Paginator($currentItems, $perPage, $currentPage, [
         'path' => Paginator::resolveCurrentPath(),
