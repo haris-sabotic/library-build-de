@@ -484,13 +484,26 @@ Route::get('/books', function () {
     $perPage = 10;
     $currentPage = Paginator::resolveCurrentPage($pageName);
 
-    $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage + 1);
+    $resultSize = count($items);
+    $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage);
     $paginator = new Paginator($currentItems, $perPage, $currentPage, [
         'path' => Paginator::resolveCurrentPath(),
         'pageName' => $pageName,
     ]);
 
-    return $paginator;
+    $paginator->hasMorePagesWhen($perPage * ($currentPage - 1) + count($currentItems) < $resultSize);
+
+    return [
+        'current_page' => $paginator->currentPage(),
+        'data' => $currentItems,
+        'first_page_url' => $paginator->url(1),
+        'from' => $paginator->firstItem(),
+        'next_page_url' => $paginator->nextPageUrl(),
+        'path' => $paginator->path(),
+        'per_page' => $paginator->perPage(),
+        'prev_page_url' => $paginator->previousPageUrl(),
+        'to' => $resultSize,
+    ];
 });
 
 // for authors, genres and categories do the following in the query string:
@@ -573,13 +586,26 @@ Route::get('/search-books', function (Request $request) {
         }
     }
 
-    $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage + 1);
+    $resultSize = count($items);
+    $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage);
     $paginator = new Paginator($currentItems, $perPage, $currentPage, [
         'path' => Paginator::resolveCurrentPath(),
         'pageName' => $pageName,
     ]);
 
-    return $paginator;
+    $paginator->hasMorePagesWhen($perPage * ($currentPage - 1) + count($currentItems) < $resultSize);
+
+    return [
+        'current_page' => $paginator->currentPage(),
+        'data' => $currentItems,
+        'first_page_url' => $paginator->url(1),
+        'from' => $paginator->firstItem(),
+        'next_page_url' => $paginator->nextPageUrl(),
+        'path' => $paginator->path(),
+        'per_page' => $paginator->perPage(),
+        'prev_page_url' => $paginator->previousPageUrl(),
+        'to' => $resultSize,
+    ];
 });
 
 Route::get('/kategorije', function () {
