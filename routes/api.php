@@ -42,17 +42,17 @@ use App\Models\ReservationStatus;
 function getBookDetails(Book $book) {
     $authors = [];
     foreach(BookAuthor::All()->where('book_id', $book->id) as $va) {
-        array_push($authors, Author::find($va->author_id)->name);
+        array_push($authors, Author::find($va->author_id));
     }
 
     $categories = [];
     foreach(BookCategory::All()->where('book_id', $book->id) as $vc) {
-        array_push($categories, Category::find($vc->category_id)->name);
+        array_push($categories, Category::find($vc->category_id));
     }
 
     $genres = [];
     foreach(BookGenre::All()->where('book_id', $book->id) as $vg) {
-        array_push($genres, Genre::find($vg->genre_id)->name);
+        array_push($genres, Genre::find($vg->genre_id));
     }
 
     $photo = '';
