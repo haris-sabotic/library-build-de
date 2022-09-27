@@ -506,6 +506,23 @@ Route::get('/books', function () {
     ];
 });
 
+Route::get('/similar-books/{book}', function (Book $book) {
+    $allBooks = Book::All()->where('id', '<>', $book->id);
+
+    $bookDetails = getBookDetails($book);
+    $books = [];
+    foreach($allBooks as $e) {
+        $details = getBookDetails($e);
+
+        if (count(array_intersect($details['genres'], $bookDetails['genres'])) > 1 &&
+            count(array_intersect($details['categories'], $bookDetails['categories'])) > 1) {
+            array_push($books, $details);
+        }
+    }
+
+    return $books;
+});
+
 // for authors, genres and categories do the following in the query string:
 //   genres[]=1&genres[]=2&authors[]=4&authors[]=7&categories[]=1
 Route::get('/search-books', function (Request $request) {
