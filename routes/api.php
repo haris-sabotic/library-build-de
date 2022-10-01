@@ -406,6 +406,7 @@ Route::post('/rezervisi', function (Request $request) {
     $bookId = $request->get('id');
     $dateFrom = $request->get('dateFrom');
     $dateTo = $request->get('dateTo');
+    $phoneNum = $request->get('phoneNumber');
 
     $reservation = new Reservation();
 
@@ -416,6 +417,7 @@ Route::post('/rezervisi', function (Request $request) {
     $reservation->close_date          = $dateTo;
     $reservation->request_date        = now();
     $reservation->closeReservation_id = 5;
+    $reservation->phone_number = $phoneNum;
 
 	$reservation->save();
 
