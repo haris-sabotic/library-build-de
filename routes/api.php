@@ -39,53 +39,6 @@ use App\Models\ReservationStatus;
 |
 */
 
-function getBookDetails(Book $book) {
-    $authors = [];
-    foreach(BookAuthor::All()->where('book_id', $book->id) as $va) {
-        array_push($authors, Author::find($va->author_id));
-    }
-
-    $categories = [];
-    foreach(BookCategory::All()->where('book_id', $book->id) as $vc) {
-        array_push($categories, Category::find($vc->category_id));
-    }
-
-    $genres = [];
-    foreach(BookGenre::All()->where('book_id', $book->id) as $vg) {
-        array_push($genres, Genre::find($vg->genre_id));
-    }
-
-    $photo = '';
-    $book_gallery = DB::table('galeries')
-                    ->where('book_id', $book->id);
-    if ($book_gallery != null) {
-        $cover = $book_gallery->where('cover', 0);
-
-        if ($cover->first() != null) {
-            $photo = $cover->first()->photo;
-        }
-    }
-
-
-    $quantity = $book->quantity - $book->reservedBooks - $book->rentedBooks;
-
-    $result = [
-        'id' => $book->id,
-        'title' => $book->title,
-        'authors' => $authors,
-        'summary' => $book->summary,
-        'available' => $quantity > 0,
-        'quantity' => $quantity,
-        'categories' => $categories,
-        'genres' => $genres,
-        'publisher' => Publisher::find($book->publisher_id)->name,
-        'publishYear' => $book->publishYear,
-        'photo' => $photo
-    ];
-
-    return $result;
-}
-
 Route::post('/login', function (Request $request) {
     $username = $request->get('username');
     $password = $request->get('password');
@@ -205,12 +158,12 @@ Route::get('/zahtjevi', function (Request $request) {
                 ->where('reservation_id', $reservation->id)
                 ->get()
                 ->first();
-            
+
             $status = null;
             if ($reservation_status != null) {
                 $status = $reservation_status->statusReservation_id;
             }
-            
+
             if ($status == 3) {
                 $type = 'reservation rejected';
             }
@@ -223,11 +176,11 @@ Route::get('/zahtjevi', function (Request $request) {
 
             array_push($data, [
                 'id' => $reservation->id,
-                'book' => array_intersect_key(getBookDetails(Book::find($reservation->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
+                'book' => array_intersect_key(Book::find($reservation->book_id)->getDetails(), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                 'librarian' => $librarian->name,
                 'dateFrom' => $reservation->reservation_date,
                 'dateTo' => $reservation->close_date,
-                'type' => $type, 
+                'type' => $type,
             ]);
         }
 
@@ -250,11 +203,11 @@ Route::get('/zahtjevi', function (Request $request) {
 
             array_push($data, [
                 'id' => $rent->id,
-                'book' => array_intersect_key(getBookDetails(Book::find($rent->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
+                'book' => array_intersect_key(Book::find($rent->book_id)->getDetails(), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                 'librarian' => $librarian->name,
                 'dateFrom' => $rent->rent_date,
                 'dateTo' => $return_date,
-                'type' => 'rent', 
+                'type' => 'rent',
             ]);
         }
 
@@ -273,12 +226,12 @@ Route::get('/zahtjevi', function (Request $request) {
                 ->where('reservation_id', $reservation->id)
                 ->get()
                 ->first();
-            
+
             $status = null;
             if ($reservation_status != null) {
                 $status = $reservation_status->statusReservation_id;
             }
-            
+
             if ($status == 3) {
                 $type = 'reservation rejected';
             }
@@ -291,11 +244,11 @@ Route::get('/zahtjevi', function (Request $request) {
 
             array_push($data, [
                 'id' => $reservation->id,
-                'book' => array_intersect_key(getBookDetails(Book::find($reservation->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
+                'book' => array_intersect_key(Book::find($reservation->book_id)->getDetails(), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                 'librarian' => $librarian->name,
                 'dateFrom' => $reservation->reservation_date,
                 'dateTo' => $reservation->close_date,
-                'type' => $type, 
+                'type' => $type,
             ]);
         }
 
@@ -321,11 +274,11 @@ Route::get('/zahtjevi', function (Request $request) {
 
             array_push($data, [
                 'id' => $rent->id,
-                'book' => array_intersect_key(getBookDetails(Book::find($rent->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
+                'book' => array_intersect_key(Book::find($rent->book_id)->getDetails(), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                 'librarian' => $librarian->name,
                 'dateFrom' => $rent->rent_date,
                 'dateTo' => $return_date,
-                'type' => 'rent', 
+                'type' => 'rent',
             ]);
         }
 
@@ -349,11 +302,11 @@ Route::get('/zahtjevi', function (Request $request) {
 
                 array_push($data, [
                     'id' => $rent->id,
-                    'book' => array_intersect_key(getBookDetails(Book::find($rent->book_id)), array_fill_keys(array('title', 'authors', 'photo'), '1')),
+                    'book' => array_intersect_key(Book::find($rent->book_id)->getDetails(), array_fill_keys(array('title', 'authors', 'photo'), '1')),
                     'librarian' => $librarian->name,
                     'dateFrom' => $rent->rent_date,
                     'dateTo' => $return_date,
-                    'type' => 'rent', 
+                    'type' => 'rent',
                 ]);
             }
         }
@@ -371,9 +324,9 @@ Route::delete('/izbrisi-transakciju', function (Request $request) {
     if ($type == 'reservation' || $type == 'reservation rejected') {
         $reservation =  DB::table('reservations')
             ->where('student_id', $user->id)
-			->where('id', $id);
+            ->where('id', $id);
 
-		$book = Book::where('id', $reservation->first()->book_id);
+        $book = Book::where('id', $reservation->first()->book_id);
         $book->update([
             'reservedBooks' => $book->first()->reservedBooks - 1
         ]);
@@ -388,9 +341,9 @@ Route::delete('/izbrisi-transakciju', function (Request $request) {
                 return response()->json([
                     'msg' => 'book not returned'
                 ], 500);
-		}
+        }
 
-		$book = Book::where('id', $rent->first()->book_id);
+        $book = Book::where('id', $rent->first()->book_id);
         $book->update([
             'rentedBooks' => $book->first()->rentedBooks - 1
         ]);
@@ -452,7 +405,7 @@ Route::get('/aktivnosti', function (Request $request) {
               ->orderByDesc('date')
               ->get();
 
-    
+
     $result = [];
     foreach ($dbresult as $activity) {
         array_push($result, [
@@ -463,7 +416,7 @@ Route::get('/aktivnosti', function (Request $request) {
             'type' => $activity->type
         ]);
     }
-    
+
     return $result;
 })->middleware(['auth:sanctum']);
 
@@ -480,7 +433,7 @@ Route::get('/book-spec/{book}', function (Book $book) {
 });
 
 Route::get('/books/{book}', function (Book $book) {
-    return getBookDetails($book);
+    return $book->getDetails();
 });
 
 Route::get('/books', function () {
@@ -488,7 +441,7 @@ Route::get('/books', function () {
 
     $items = [];
     foreach($books as $book) {
-        array_push($items, getBookDetails($book));
+        array_push($items, $book->getDetails());
     }
 
 
@@ -521,10 +474,10 @@ Route::get('/books', function () {
 Route::get('/similar-books/{book}', function (Book $book) {
     $allBooks = Book::All()->where('id', '<>', $book->id);
 
-    $bookDetails = getBookDetails($book);
+    $bookDetails = $book->getDetails();
     $books = [];
     foreach($allBooks as $e) {
-        $details = getBookDetails($e);
+        $details = $e->getDetails();
 
         if (count(array_intersect($details['genres'], $bookDetails['genres'])) > 1 &&
             count(array_intersect($details['categories'], $bookDetails['categories'])) > 1) {
@@ -598,7 +551,7 @@ Route::get('/search-books', function (Request $request) {
     $items = $data->get()->toArray();
 
     foreach($items as $i => $item) {
-        $items[$i] = getBookDetails(Book::find($item['id']));
+        $items[$i] = Book::find($item['id'])->getDetails();
     }
 
     if ($request->get('availability')) {
@@ -666,3 +619,4 @@ Route::get('/jezici', function () {
     $langs = Language::simplePaginate(10);
     return $langs;
 });
+

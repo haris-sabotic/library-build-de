@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Book extends Model
 {
@@ -61,5 +62,52 @@ class Book extends Model
 
     public function galery() {
         return $this->hasMany(Galery::class);
+    }
+
+    public function getDetails() {
+        $authors = [];
+        foreach(BookAuthor::All()->where('book_id', $this->id) as $va) {
+            array_push($authors, Author::find($va->author_id));
+        }
+
+        $categories = [];
+        foreach(BookCategory::All()->where('book_id', $this->id) as $vc) {
+            array_push($categories, Category::find($vc->category_id));
+        }
+
+        $genres = [];
+        foreach(BookGenre::All()->where('book_id', $this->id) as $vg) {
+            array_push($genres, Genre::find($vg->genre_id));
+        }
+
+        $photo = '';
+        $book_gallery = DB::table('galeries')
+                    ->where('book_id', $this->id);
+        if ($book_gallery != null) {
+            $cover = $book_gallery->where('cover', 0);
+
+            if ($cover->first() != null) {
+                $photo = $cover->first()->photo;
+            }
+        }
+
+
+        $quantity = $this->quantity - $this->reservedBooks - $this->rentedBooks;
+
+        $result = [
+            'id' => $this->id,
+            'title' => $this->title,
+            'authors' => $authors,
+            'summary' => $this->summary,
+            'available' => $quantity > 0,
+            'quantity' => $quantity,
+            'categories' => $categories,
+            'genres' => $genres,
+            'publisher' => Publisher::find($this->publisher_id)->name,
+            'publishYear' => $this->publishYear,
+            'photo' => $photo
+        ];
+
+        return $result;
     }
 }

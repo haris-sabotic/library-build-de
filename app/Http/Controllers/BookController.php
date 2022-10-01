@@ -26,6 +26,7 @@ use App\Services\ReservationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 /*
 |--------------------------------------------------------------------------
@@ -404,7 +405,7 @@ class BookController extends Controller
      * @param  ReservationService $reservationService
      */
     public function showRentingActive(Book $book, DashboardService $dashboardService, ReservationService $reservationService) {
-        
+
         $viewName = $this->viewFolder . '.rentingActive';
 
         $viewModel = [
@@ -492,6 +493,16 @@ class BookController extends Controller
                                 ->take(3)
                                 ->get(),
         ];
+
+        // send notification to mobile devices
+        $serverKey = config('firebase')['FIREBASE_SERVER_KEY'];
+        $response = Http::withHeaders([
+            'Authorization' => "key=$serverKey",
+            'Content-Type' => 'application/json',
+        ])->post('https://fcm.googleapis.com/fcm/send', [
+            'to' => '/topics/nova-knjiga',
+            'data' => $book->getDetails(),
+        ]);
 
         //redirect to all books
         return redirect('bookRecords')->with('success', 'Knjiga je uspješno unsesena!');
@@ -600,7 +611,7 @@ class BookController extends Controller
      * @param  CategoryService $categoryService
      */
     public function filterAuthors(BookService $bookService, AuthorService $authorService, CategoryService $categoryService) {
-        
+
         $viewName = $this->viewFolder . '.bookRecords';
 
         $books = $bookService->filterAuthors()
