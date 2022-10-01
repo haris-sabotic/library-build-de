@@ -371,7 +371,12 @@ Route::delete('/izbrisi-transakciju', function (Request $request) {
     if ($type == 'reservation' || $type == 'reservation rejected') {
         $reservation =  DB::table('reservations')
             ->where('student_id', $user->id)
-            ->where('id', $id);
+			->where('id', $id);
+
+		$book = Book::where('id', $reservation->first()->book_id);
+        $book->update([
+            'reservedBooks' => $book->first()->reservedBooks - 1
+        ]);
 
         $reservation->delete();
     } else if ($type == 'rent') {
@@ -383,7 +388,12 @@ Route::delete('/izbrisi-transakciju', function (Request $request) {
                 return response()->json([
                     'msg' => 'book not returned'
                 ], 500);
-        }
+		}
+
+		$book = Book::where('id', $rent->first()->book_id);
+        $book->update([
+            'rentedBooks' => $book->first()->rentedBooks - 1
+        ]);
 
         $rent->delete();
     }
