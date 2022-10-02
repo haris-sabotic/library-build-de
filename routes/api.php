@@ -568,6 +568,10 @@ Route::get('/search-books', function (Request $request) {
         }
     }
 
+    if ($request->get('enable_pagination') == 'false') {
+        return $items;
+    }
+
     $resultSize = count($items);
     $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage);
     $paginator = new Paginator($currentItems, $perPage, $currentPage, [
