@@ -9,6 +9,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class RegisteredUserController extends Controller
 {
@@ -32,52 +33,29 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        
-        /*
         $request->validate([
             'name' => 'required|string|max:255',
+            'jmbg' => 'digits:13|unique:users,jmbg',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|confirmed|min:8',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'userType_id' => 2,
-            'username' => $request->name,
-            'jmbg' => '1234567891234'
+            'password_confirmation' => 'same:password'
         ]);
 
 
-        $user->userType_id = 2;
-        $librarian->username = $request->name;
-        $librarian->jmbg = 1234567891234;
+        $student = new User();
 
-        event(new Registered($user));
+        $student->userType_id = 3;
 
-        Auth::login($user);
+        $student->name              = $request->name;
+        $student->jmbg              = $request->jmbg;
+        $student->email_verified_at = now();
+        $student->email             = $request->email;
+        $student->username          = str_replace(' ', '', strtolower($request->name));
+        $student->remember_token    = Str::random(10);
+        $student->photo    = 'default.jpg';
 
-        return redirect(RouteServiceProvider::HOME);
-        */
+        $student->password=Hash::make($request->password);
 
-
-        $librarian = new User();
-
-        $librarian->userType_id = 1;
-
-        $librarian->name              = 'admin';
-        $librarian->jmbg              = '1234567890123';
-        $librarian->email_verified_at = now();
-        $librarian->email             = 'admin@gmail.com';
-        $librarian->username          = 'admin';
-        $librarian->remember_token    = 'jlskasjjks';
-
-        $password = 'password';
-        $passwordRepeat = 'password';
-
-        $librarian->password=Hash::make($password);
-
-        $librarian->save();
+        $student->save();
     }
 }
