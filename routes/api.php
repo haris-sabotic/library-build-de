@@ -63,6 +63,36 @@ Route::post('/login', function (Request $request) {
     ];
 });
 
+Route::post('/register', function (Request $request) {
+    $jmbg = $request->get('jmbg');
+    $name = $request->get('name');
+    $email = $request->get('email');
+    $username = $request->get('username');
+    $password = $request->get('password');
+
+    $student = new User();
+
+    $student->userType_id = 3;
+
+    $student->name              = $name;
+    $student->jmbg              = $jmbg;
+    $student->email_verified_at = now();
+    $student->email             = $email;
+    $student->username          = $username;
+    $student->remember_token    = Str::random(10);
+    $student->photo    = 'default.jpg';
+
+    $student->password=Hash::make($password);
+
+    $student->save();
+
+    $token = $student->createToken('authToken');
+
+    return [
+        'plainTextToken' => $token->plainTextToken
+    ];
+});
+
 Route::post('/forgot-password', function (Request $request) {
     $user = User::query()->where('username', $request['username'])->first();
 
