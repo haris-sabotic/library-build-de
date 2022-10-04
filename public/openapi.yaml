@@ -109,9 +109,25 @@ paths:
               schema:
                 type: object
                 properties:
+                  msg:
+                    type: string
+                    example: "success"
                   plainTextToken:
                     type: string
                     example: "27|Qv1aXddrHhoCRJH9bEkplyQBdtwwIAX9md7178Na"
+        409:
+          description: Invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "jmbg|username|email"
+                  plainTextToken:
+                    type: string
+                    example: null
 
   /forgot-username:
     post:

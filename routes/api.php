@@ -70,6 +70,27 @@ Route::post('/register', function (Request $request) {
     $username = $request->get('username');
     $password = $request->get('password');
 
+    if (User::where('jmbg', $jmbg)->first() != null) {
+        return response()->json([
+            'msg' => 'jmbg',
+            'plainTextToken' => null
+        ], 409);
+    }
+
+    if (User::where('username', $username)->first() != null) {
+        return response()->json([
+            'msg' => 'username',
+            'plainTextToken' => null
+        ], 409);
+    }
+
+    if (User::where('email', $email)->first() != null) {
+        return response()->json([
+            'msg' => 'email',
+            'plainTextToken' => null
+        ], 409);
+    }
+
     $student = new User();
 
     $student->userType_id = 3;
@@ -89,6 +110,7 @@ Route::post('/register', function (Request $request) {
     $token = $student->createToken('authToken');
 
     return [
+        'msg' => 'success',
         'plainTextToken' => $token->plainTextToken
     ];
 });
